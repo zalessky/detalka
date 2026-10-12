@@ -73,12 +73,17 @@ if docker compose version >/dev/null 2>&1; then DC="docker compose -p $P"; else 
     exit 1
   fi
   $DC pull && $DC up -d --remove-orphans
+  # убрать только старые (безымянные) образы «Детальки»; образы rolf64 и прочие не трогаются
+  docker image prune -f --filter "label=org.opencontainers.image.source=https://github.com/zalessky/detalka"
 } >> update.log 2>&1
+# лог не растёт бесконечно: оставляем последние 500 строк
+tail -n 500 update.log > update.log.tmp && mv update.log.tmp update.log
 ```
 
 Лог — `/volume1/docker/detalka/update.log`. Новая версия = новый Release `vX.Y`; чтобы увидеть сразу, а не ночью, — «Выполнить» у задачи.
 
-`docker image prune` здесь не вызываем: его уже делает задача rolf, а двум задачам незачем чистить образы друг за друга.
+Что остаётся после обновления: один контейнер `detalka-site-1`, сеть `detalka_default` и текущий образ. Старый образ
+удаляется сразу (фильтр по метке репозитория, от задачи rolf не зависит), томов у сайта нет.
 
 ## 4. Выход в интернет (позже)
 
