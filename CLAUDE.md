@@ -14,7 +14,7 @@
 ## Релиз = деплой
 - Тег `vX.Y` собирает образ `ghcr.io/zalessky/detalka` (`latest` и `X.Y`); NAS ночью забирает `latest` (см. `docs/DSM.md`).
 - Имя образа в `.github/workflows/docker-image.yml` — только `detalka`. Если поставить `sterx`, сборка перезапишет образ rolf64.
-- Релизы выпускает владелец сам в интерфейсе GitHub (Release с новым тегом, Target — `main`). Claude Code тег не ставит.
+- Релизы «Детальки» выпускает Claude Code по просьбе владельца: тег `vX.Y` на коммит в `main` и `git push origin vX.Y` (владелец разрешил 12.10.2026). Для rolf64 (SterX) релизы по-прежнему делает только владелец.
 - К релизу готовить: версия в `package.json` и `package-lock.json`, запись в `CHANGELOG.md`, `npm run build` проходит.
 - Пока сайт не выпускается наружу — только тестовый стенд на NAS (`http://192.168.1.56:8081`).
 - На NAS «Деталька» — отдельный проект `detalka` (`/volume1/docker/detalka`) со своей задачей обновления. Не объединять с проектом `rolf` в один compose.
