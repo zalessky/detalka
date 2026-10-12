@@ -1,28 +1,33 @@
 # Тестовый стенд на NAS (Synology DSM)
 
-«Деталька» живёт в том же проекте Container Manager `rolf`, что и rolf64.ru (`/volume1/docker/web/compose.yaml`),
-и обновляется той же ночной задачей «Обновление сайтов» (`pull` + `up -d`). Пока сайт смотрим только из локальной сети.
+«Деталька» — **отдельный** проект Container Manager `detalka` со своей папкой, своим `compose.yaml`
+и своей задачей обновления. С проектом `rolf` (rolf64.ru) не связан: его файлы и задачу не трогаем.
+Пока сайт смотрим только из локальной сети.
 
-## 1. Собрать образ (один раз на каждую версию)
+| | rolf64 | Деталька |
+| --- | --- | --- |
+| Проект Container Manager | `rolf` | `detalka` |
+| Папка | `/volume1/docker/web` | `/volume1/docker/detalka` |
+| Образ | `ghcr.io/zalessky/sterx` | `ghcr.io/zalessky/detalka` |
+| Задача в Планировщике | «Обновление сайтов» | «Обновление Детальки» |
 
-GitHub → репозиторий `zalessky/detalka` → **Releases → Draft a new release** → тег `v0.1` (новый), Target — `main` → Publish.
-Workflow `Docker image` соберёт `ghcr.io/zalessky/detalka` с тегами `latest` и `0.1` (вкладка Actions, ~5 минут).
+## 1. Собрать образ
 
-## 2. Доступ NAS к образу
+GitHub → `zalessky/detalka` → **Releases → Draft a new release** → новый тег `v0.1`, Target — `main` → Publish.
+Workflow `Docker image` соберёт `ghcr.io/zalessky/detalka` с тегами `latest` и `0.1` (вкладка Actions, несколько минут).
 
-Репозиторий приватный, поэтому пакет после первой сборки тоже приватный. Два варианта:
+После первой сборки проверить, что пакет публичный (NAS скачивает без логина):
+профиль GitHub → Packages → `detalka` → Package settings → Change visibility → **Public**.
 
-- **как у rolf64 (проще):** GitHub → профиль → Packages → `detalka` → Package settings → Change visibility → **Public**.
-  Публичным станет только собранный образ (готовая статика сайта), исходники останутся закрытыми;
-- **оставить приватным:** на NAS один раз под root выполнить `docker login ghcr.io -u zalessky`
-  и ввести токен GitHub с единственным правом `read:packages`.
+## 2. Папка и compose.yaml
 
-## 3. Добавить сервис в compose.yaml
-
-В `/volume1/docker/web/compose.yaml` (первая строка файла должна быть `name: rolf`) в раздел `services:` добавить:
+1. File Station: создать папку `/volume1/docker/detalka`.
+2. Положить в неё `compose.yaml`:
 
 ```yaml
-  detalka:
+name: detalka
+services:
+  site:
     image: ghcr.io/zalessky/detalka:latest
     restart: unless-stopped
     read_only: true
@@ -30,23 +35,44 @@ Workflow `Docker image` соберёт `ghcr.io/zalessky/detalka` с тегам�
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     ports:
-      - "8081:8080"   # временно: просмотр только из локальной сети, на роутере НЕ пробрасывать
-    networks: [web]
+      - "8081:8080"   # просмотр только из локальной сети; на роутере НЕ пробрасывать
 ```
 
-Применить: Container Manager → проект `rolf` → Остановить → Собрать → Запустить
-(или Планировщик задач → «Обновление сайтов» → Выполнить).
+3. Container Manager → Проект → Создать: имя `detalka`, путь `/volume1/docker/detalka`, «Использовать существующий compose.yaml» → Готово.
 
 Открыть: **http://192.168.1.56:8081**
 
-## 4. Обновления
+## 3. Автообновление — отдельная задача
 
-Новая версия = новый Release с тегом `vX.Y` на `main`. Ночью задача сама подтянет `latest`;
-чтобы увидеть сразу — «Выполнить» у задачи «Обновление сайтов».
+Панель управления → Планировщик задач → Создать → Запланированная задача → Пользовательский сценарий:
+имя «Обновление Детальки», пользователь `root`, ежедневно ночью (можно на 10 минут позже задачи rolf), сценарий:
 
-## 5. Выход в интернет (позже)
+```bash
+cd /volume1/docker/detalka || exit 1
+export PATH="$PATH:/usr/local/bin"
+P=detalka   # имя проекта в Container Manager
+if docker compose version >/dev/null 2>&1; then DC="docker compose -p $P"; else DC="docker-compose -p $P"; fi
+{
+  echo "=== $(date '+%F %T')"
+  # защита: не создавать второй комплект контейнеров, если имя проекта не совпало
+  if [ -z "$($DC ps -a -q)" ]; then
+    echo "Проект $P не найден — проверьте P= в скрипте. Ничего не сделано."
+    exit 1
+  fi
+  $DC pull && $DC up -d --remove-orphans
+} >> update.log 2>&1
+```
+
+Лог — `/volume1/docker/detalka/update.log`. Новая версия = новый Release `vX.Y`; чтобы увидеть сразу, а не ночью, — «Выполнить» у задачи.
+
+`docker image prune` здесь не вызываем: его уже делает задача rolf, а двум задачам незачем чистить образы друг за друга.
+
+## 4. Выход в интернет (позже)
+
+Наружу сайты выходят через Nginx Proxy Manager, который живёт в проекте `rolf`. Проекты остаются раздельными,
+NPM просто проксирует на опубликованный порт «Детальки»:
 
 1. A-записи `detalka.info` и `www` → `188.235.151.20`.
-2. NPM (`http://192.168.1.56:81`) → новый Proxy Host: `detalka.info`, `www.detalka.info` → `http`, адрес `detalka`, порт `8080`;
+2. NPM (`http://192.168.1.56:81`) → новый Proxy Host: `detalka.info`, `www.detalka.info` → `http`, `192.168.1.56`, порт `8081`;
    Block Common Exploits, SSL Let's Encrypt, Force SSL, HTTP/2, HSTS.
-3. У сервиса `detalka` удалить строку `ports` и применить compose.yaml.
+3. Порт `8081` на роутере по-прежнему не пробрасывать — снаружи сайт доступен только через NPM (80/443).
