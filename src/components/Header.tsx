@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import Brand from '@/components/Brand';
+import PaletteSwitch from '@/components/PaletteSwitch';
 import { PHONE, PHONE_HREF } from '@/lib/site';
 
 const LINKS = [
@@ -18,8 +20,9 @@ export default function Header() {
     <header className="head">
       <div className="wrap">
         <a href="#top" className="logo" aria-label="Деталька — на главную" onClick={close}>
-          <img src="/images/brand/logo-white.png" alt="Деталька" width={207} height={38} />
+          <Brand className="brand-head" />
         </a>
+        <PaletteSwitch />
         <nav className="nav" aria-label="Разделы">
           {LINKS.map((l) => (
             <a key={l.href} href={l.href}>{l.label}</a>

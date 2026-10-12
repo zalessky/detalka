@@ -1,3 +1,4 @@
+import Flag from '@/components/Flag';
 import { VIBRO_PRICE } from '@/lib/site';
 
 // Новая услуга, которой нет у большинства сервисов, — продвигаем первой.
@@ -12,7 +13,7 @@ const POINTS = [
 export default function Vibro() {
   return (
     <section className="dark vibro sec" id="vibro">
-      <div className="flag flag-right" />
+      <Flag side="right" />
       <div className="wrap">
         <div>
           <span className="badge">Новинка в Энгельсе</span>

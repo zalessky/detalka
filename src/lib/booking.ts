@@ -2,13 +2,13 @@ export type Booking = { name: string; phone: string; car: string; service: strin
 
 // Ключ Web3Forms (web3forms.com) для адреса sto@detalka.info. Ключ не секретный:
 // он только указывает сервису, на какую почту пересылать заявки.
-// Пока ключ пустой, форма предлагает позвонить или написать в MAX / Telegram.
-export const WEB3FORMS_KEY = '';
+// Если сервис недоступен, форма предлагает позвонить или написать в MAX / Telegram.
+export const WEB3FORMS_KEY = 'fdea26c7-1aba-463b-9b09-a3aa8fbf999f';
 
 // Текст заявки для письма.
 export function buildBookingText(b: Booking): string {
   return [
-    `Имя: ${b.name.trim()}`,
+    `Имя: ${b.name.trim() || 'не указано'}`,
     `Телефон: ${b.phone.trim()}`,
     `Автомобиль: ${b.car.trim() || 'не указан'}`,
     `Услуга: ${b.service}`,

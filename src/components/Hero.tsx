@@ -1,14 +1,15 @@
+import Brand from '@/components/Brand';
+import Flag from '@/components/Flag';
 import { MaxLogo, TelegramLogo } from '@/components/MessengerIcons';
 import { ADDRESS, MAX_URL, PHONE_HREF, PHONE_SHORT, TELEGRAM_URL } from '@/lib/site';
 
 export default function Hero() {
   return (
     <section className="dark hero" id="top">
-      <div className="flag" />
+      <Flag />
       <div className="wrap">
         <div className="hero-text">
-          <img className="hero-logo" src="/images/brand/logo-white.png" alt="Деталька" width={520} height={95} />
-          <div className="hero-tc">ТЕХЦЕНТР</div>
+          <Brand className="brand-hero" />
           <h1>Ремонт и обслуживание автомобилей — от диагностики до последней детальки</h1>
           <p className="hero-sub">
             Диагностика подвески на вибростенде, двигатель, ходовая, развал-схождение 3D, кондиционеры. Магазин запчастей
@@ -22,11 +23,16 @@ export default function Hero() {
             </a>
             <a className="btn btn-ghost" href={TELEGRAM_URL} target="_blank" rel="noopener">
               <TelegramLogo className="ico-img" />
-              Telegram
+              Написать в Telegram
             </a>
           </div>
-          <a className="hero-tel" href={PHONE_HREF}>{PHONE_SHORT}</a>
-          <div className="hero-addr">{ADDRESS}</div>
+          {/* адрес растянут ровно по ширине номера телефона */}
+          <div className="hero-contact">
+            <a className="hero-tel" href={PHONE_HREF}>{PHONE_SHORT}</a>
+            <svg className="hero-addr" viewBox="0 0 600 30" role="img" aria-label={ADDRESS}>
+              <text x="0" y="22" textLength="600" lengthAdjust="spacingAndGlyphs">{ADDRESS}</text>
+            </svg>
+          </div>
         </div>
         <div className="hero-vis">
           <img src="/images/brand/mascot-ok.png" alt="" width={330} height={464} />

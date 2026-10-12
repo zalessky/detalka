@@ -65,37 +65,54 @@ p { margin: 0; }
 /* ---------- Тёмные блоки и клетчатый флаг ---------- */
 .dark { position: relative; isolation: isolate; overflow: hidden; color: var(--on-d);
   background: radial-gradient(120% 90% at 85% 10%, var(--d3) 0%, transparent 55%), linear-gradient(160deg, var(--d2) 0%, var(--d1) 70%, var(--d0) 100%); }
-.flag { position: absolute; z-index: -1; pointer-events: none; inset: -20% 45% -20% -18%;
-  background: repeating-conic-gradient(var(--fl-light) 0 25%, var(--fl-dark) 0 50%) 0 0 / 96px 96px;
-  transform: perspective(900px) rotateY(32deg) rotateZ(-12deg); filter: url(#wave); opacity: .5;
-  -webkit-mask-image: linear-gradient(100deg, #000 15%, rgba(0,0,0,.35) 50%, transparent 80%); mask-image: linear-gradient(100deg, #000 15%, rgba(0,0,0,.35) 50%, transparent 80%); }
-.flag::after { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, var(--fl-tint), transparent); mix-blend-mode: color; }
-.flag-right { inset: -30% -20% -30% 55%; transform: perspective(900px) rotateY(-30deg) rotateZ(10deg); opacity: .28;
-  -webkit-mask-image: linear-gradient(260deg, #000 10%, transparent 75%); mask-image: linear-gradient(260deg, #000 10%, transparent 75%); }
+/* Флаг пит-стопа (src/components/Flag.tsx): крупные клетки, полотнище уходит в фон градиентом */
+/* --fw — ширина холста; древко на холсте стоит примерно в 17% от его края.
+   Сдвигаем холст на 22% — древко уходит за край экрана. Флаг занимает больше 2/3 ширины,
+   а его свободный край (~87% холста) уже растворён маской — края полотнища не видно.
+   Правый флаг — зеркало левого. */
+.flag { --fw: 125%; position: absolute; z-index: -1; pointer-events: none; top: 50%; left: calc(var(--fw) * -0.22); width: var(--fw);
+  aspect-ratio: 1000 / 720; transform: translateY(-50%); opacity: .6;
+  -webkit-mask-image: linear-gradient(100deg, #000 24%, rgba(0,0,0,.55) 55%, transparent 81%); mask-image: linear-gradient(100deg, #000 24%, rgba(0,0,0,.55) 55%, transparent 81%); }
+.flag canvas { width: 100%; height: 100%; display: block; }
+.flag.flag-right { left: auto; right: calc(var(--fw) * -0.22); transform: translateY(-50%) scaleX(-1); opacity: .32; }
 
 /* ---------- Шапка ---------- */
 .head { position: sticky; top: 0; z-index: 50; background: color-mix(in srgb, var(--d0) 94%, transparent); backdrop-filter: blur(8px); color: var(--on-d); }
 .head .wrap { display: flex; align-items: center; gap: 24px; height: var(--head-h); }
-.head .logo img { height: 38px; width: auto; filter: drop-shadow(0 0 10px var(--glow)); }
+.head .logo { display: block; }
 .nav { display: flex; gap: 26px; margin-left: auto; font-size: 15px; }
 .nav a { color: var(--hi); transition: color .2s; }
 .nav a:hover { color: var(--on-d); }
 .head-phone { font-weight: 600; white-space: nowrap; }
 .head-phone:hover { color: var(--hi); }
+/* временный переключатель палитр (src/components/PaletteSwitch.tsx) */
+.pal-switch { display: flex; gap: 6px; padding: 4px; border-radius: 999px; background: color-mix(in srgb, var(--on-d) 8%, transparent); }
+.pal-switch button { width: 18px; height: 18px; border-radius: 50%; border: 2px solid transparent; padding: 0; cursor: pointer; }
+.pal-switch button[aria-pressed='true'] { border-color: var(--on-d); }
 .burger { display: none; margin-left: auto; background: none; border: 0; color: var(--on-d); padding: 8px; cursor: pointer; }
 .mnav { display: none; }
 
 /* ---------- Первый экран ---------- */
-.hero .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 32px; align-items: center; padding-block: 64px 56px; }
-.hero-logo { width: min(520px, 100%); filter: drop-shadow(0 0 18px var(--glow)); }
-.hero-tc { font-family: var(--f-display); font-weight: 700; letter-spacing: .24em; font-size: clamp(18px, 2.2vw, 28px); margin: 6px 0 26px 6%; }
+.hero .wrap { display: grid; grid-template-columns: 1.65fr 1fr; gap: 32px; align-items: center; padding-block: 64px 56px; }
+/* Логотип + «ТЕХЦЕНТР» (src/components/Brand.tsx): подпись по центру, в половину ширины логотипа */
+.brand { display: inline-flex; flex-direction: column; align-items: center; filter: drop-shadow(0 0 14px var(--glow)); }
+.brand img { width: 100%; }
+/* подпись — 60% ширины логотипа, поднята к буквам почти на их высоту */
+.brand svg { width: 60%; height: auto; margin-top: -4.5%; overflow: visible; position: relative; }
+.brand text { font-family: 'Montserrat', 'Arial Black', sans-serif; font-weight: 900; font-size: 50px; fill: var(--on-d); }
+.brand-hero { width: min(520px, 100%); margin-bottom: 26px; }
+.brand-head { width: 150px; filter: drop-shadow(0 0 8px var(--glow)); }
+.brand-foot { width: 170px; filter: drop-shadow(0 0 8px var(--glow)); }
 .hero h1 { font-family: var(--f-display); font-weight: 500; font-size: clamp(22px, 2.8vw, 34px); line-height: 1.2; margin-bottom: 14px; }
-.hero-sub { color: var(--on-d2); max-width: 54ch; margin-bottom: 26px; }
+.hero-sub { color: var(--on-d2); max-width: 64ch; margin-bottom: 26px; }
 .cta { display: flex; flex-wrap: wrap; gap: 12px; }
 .hero-tel { display: inline-block; font-family: var(--f-display); font-weight: 700; font-size: clamp(26px, 3.4vw, 42px); margin: 28px 0 4px; font-variant-numeric: tabular-nums; }
 .hero-tel:hover { color: var(--hi); }
-.hero-addr { color: var(--on-d2); font-size: 15px; }
-.hero-vis { display: grid; justify-items: center; }
+.hero-contact { display: inline-flex; flex-direction: column; margin-top: 28px; }
+.hero-contact .hero-tel { margin: 0 0 6px; line-height: 1; }
+.hero-addr { width: 100%; height: auto; overflow: visible; }
+.hero-addr text { font-family: var(--f-body); font-size: 22px; fill: var(--on-d2); }
+.hero-vis { display: grid; justify-items: end; padding-top: 70px; margin-right: -2%; }
 .hero-vis img { width: min(330px, 75%); filter: drop-shadow(0 18px 24px rgba(0,0,0,.4)); }
 
 /* ---------- Цифры ---------- */
@@ -156,7 +173,12 @@ p { margin: 0; }
 .rev { margin: 0; background: var(--paper); border-radius: 16px; padding: 24px; display: grid; gap: 14px; align-content: start; transition: opacity .6s ease var(--d, 0s), transform .6s ease var(--d, 0s); }
 .rev .stars { color: var(--acc); letter-spacing: 2px; font-size: 15px; }
 .rev blockquote { margin: 0; font-size: 16px; }
-.rev-more { margin-top: 24px; display: inline-flex; align-items: center; gap: 8px; color: var(--price); font-weight: 600; border-bottom: 1.5px solid currentColor; }
+.rev figcaption { font-size: 13px; color: var(--ink2); margin-top: auto; }
+.rev { animation: revIn .5s ease both; }
+@keyframes revIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+button.rev-more { background: none; border: 0; border-bottom: 1.5px solid currentColor; padding: 0; font: inherit; font-weight: 600; cursor: pointer; }
+.rev-links { display: flex; flex-wrap: wrap; gap: 14px 32px; margin-top: 28px; }
+.rev-more { display: inline-flex; align-items: center; gap: 8px; color: var(--price); font-weight: 600; border-bottom: 1.5px solid currentColor; }
 
 /* ---------- Запись ---------- */
 .booking .wrap { display: grid; grid-template-columns: .9fr 1.1fr; gap: 48px; align-items: start; }
@@ -175,6 +197,7 @@ p { margin: 0; }
 .form input:focus, .form select:focus, .form textarea:focus { outline: none; border-color: var(--acc); background: var(--surface); }
 .form textarea { resize: vertical; min-height: 84px; }
 .form small { color: var(--ink2); font-size: 13px; }
+.form .form-note { font-size: 11.5px; line-height: 1.45; opacity: .85; }
 .form-done { text-align: center; display: grid; gap: 12px; justify-items: center; padding-block: 24px; }
 .form-done .btns { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
 
@@ -189,7 +212,7 @@ p { margin: 0; }
 
 /* ---------- Подвал ---------- */
 .foot .wrap { display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: center; padding-block: 32px; }
-.foot img { height: 34px; width: auto; filter: drop-shadow(0 0 8px var(--glow)); }
+
 .foot-links { display: flex; flex-wrap: wrap; gap: 18px; font-size: 15px; color: var(--on-d2); }
 .foot-links a:hover { color: var(--on-d); }
 .foot-copy { width: 100%; font-size: 13px; color: var(--on-d3); }
@@ -230,10 +253,9 @@ p { margin: 0; }
   .wrap { padding-inline: 16px; }
   .sec { padding-block: 56px; }
   .hero .wrap { grid-template-columns: 1fr; padding-block: 28px 40px; gap: 4px; position: relative; }
-  .hero-logo { width: 72%; }
-  .hero-vis { position: absolute; right: 10px; top: 18px; }
+  .brand-hero { width: 72%; margin-bottom: 18px; }
+  .hero-vis { position: absolute; right: 10px; top: 18px; padding-top: 0; margin-right: 0; }
   .hero-vis img { width: 92px; }
-  .hero-tc { margin-bottom: 18px; }
   .cta .btn { flex: 1 1 100%; }
   .facts .wrap { grid-template-columns: 1fr 1fr; }
   .facts .f { padding: 14px 0 14px 16px; }
@@ -246,7 +268,8 @@ p { margin: 0; }
   .form { padding: 20px; }
   .form .row { grid-template-columns: 1fr; }
   .map, .map iframe { min-height: 340px; }
-  .flag { inset: -10% 10% 40% -40%; }
+  .flag { --fw: 170%; top: 30%; opacity: .42; }
+  .flag.flag-right { opacity: .26; }
   .fab { width: 54px; height: 54px; right: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {

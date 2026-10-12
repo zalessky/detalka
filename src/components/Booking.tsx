@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Flag from '@/components/Flag';
 import { MaxLogo, TelegramLogo } from '@/components/MessengerIcons';
 import { sendBooking } from '@/lib/booking';
 import { BOOKING_SERVICES, MAX_URL, PHONE, PHONE_HREF, TELEGRAM_NAME, TELEGRAM_URL } from '@/lib/site';
@@ -21,7 +22,7 @@ export default function Booking() {
 
   return (
     <section className="dark booking sec" id="booking">
-      <div className="flag" />
+      <Flag />
       <div className="wrap">
         <div>
           <h2 className="h2">Запишитесь на сервис</h2>
@@ -31,11 +32,11 @@ export default function Booking() {
           <div className="chat-cards">
             <a className="chat" href={MAX_URL} target="_blank" rel="noopener">
               <MaxLogo />
-              <span><small>Основной канал</small><b>Написать в MAX</b></span>
+              <span><small>Отвечаем быстрее всего</small><b>Написать в MAX</b></span>
             </a>
             <a className="chat" href={TELEGRAM_URL} target="_blank" rel="noopener">
               <TelegramLogo className="tg" />
-              <span><small>Telegram</small><b>{TELEGRAM_NAME}</b></span>
+              <span><small>{TELEGRAM_NAME}</small><b>Написать в Telegram</b></span>
             </a>
             <a className="chat" href={PHONE_HREF}>
               <span className="tg" style={{ display: 'grid', placeItems: 'center', background: 'var(--acc)', color: 'var(--acc-ink)', fontSize: 20 }} aria-hidden="true">✆</span>
@@ -50,7 +51,7 @@ export default function Booking() {
             <p style={{ color: 'var(--ink2)' }}>
               {state === 'sent'
                 ? 'Администратор перезвонит вам в рабочее время, ежедневно с 9 до 18.'
-                : 'Онлайн-запись пока не подключена. Позвоните или напишите нам — запишем сразу.'}
+                : 'Не получилось отправить заявку — похоже, пропала связь. Позвоните или напишите нам, запишем сразу.'}
             </p>
             <div className="btns">
               <a className="btn btn-pri" href={PHONE_HREF}>{PHONE}</a>
@@ -62,7 +63,7 @@ export default function Booking() {
           <form className="form" onSubmit={onSubmit}>
             <h3>Онлайн-заявка</h3>
             <div className="row">
-              <label>Имя<input id="b-name" name="name" required autoComplete="name" placeholder="Как к вам обращаться" /></label>
+              <label>Имя (необязательно)<input id="b-name" name="name" autoComplete="given-name" placeholder="Как к вам обращаться" /></label>
               <label>Телефон<input id="b-phone" name="phone" type="tel" required autoComplete="tel" placeholder="+7 (___) ___-__-__" /></label>
             </div>
             <div className="row">
@@ -78,6 +79,13 @@ export default function Booking() {
               {state === 'sending' ? 'Отправляем…' : 'Отправить заявку'}
             </button>
             <small>Перезвоним в рабочее время: ежедневно с 9 до 18.</small>
+            {/* Честная формулировка вместо «не является сбором ПД»: телефон — персональные данные,
+                поэтому говорим, что сайт их не хранит, куда уходит заявка и как обойтись без формы. */}
+            <small className="form-note">
+              Сайт не хранит введённые данные: заявка сразу уходит письмом администратору техцентра (через сервис отправки
+              форм Web3Forms) и нужна только для того, чтобы перезвонить и записать вас. Не хотите оставлять телефон —
+              позвоните нам или напишите в MAX.
+            </small>
           </form>
         )}
       </div>

@@ -5,6 +5,8 @@ import '@fontsource/unbounded/700.css';
 import '@fontsource/golos-text/400.css';
 import '@fontsource/golos-text/500.css';
 import '@fontsource/golos-text/600.css';
+// широкий жирный для «ТЕХЦЕНТР» под логотипом, как на визитке (аналог Arial Black, которого нет на Android)
+import '@fontsource/montserrat/900.css';
 import './globals.css';
 import { PALETTE, PALETTES } from '@/lib/site';
 
@@ -40,13 +42,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: paletteScript }} />
       </head>
       <body>
-        {/* Фильтр, который изгибает клетчатый флаг */}
-        <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
-          <filter id="wave" x="-10%" y="-10%" width="120%" height="120%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.004 0.009" numOctaves={2} seed={7} result="n" />
-            <feDisplacementMap in="SourceGraphic" in2="n" scale={70} xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </svg>
         {children}
       </body>
     </html>
