@@ -12,6 +12,8 @@
 - `palette-variants.html` не удалять — к выбору палитры могут вернуться.
 
 ## Релиз = деплой
-- Тег `vX.Y` собирает образ `ghcr.io/zalessky/detalka` (`latest` и `X.Y`). Тег ставить только на коммит в основной ветке `main`.
-- Перед тегом: поднять версию в `package.json` и `package-lock.json`, запись в `CHANGELOG.md`, `npm run build` проходит.
-- Пока сайт не выпускается наружу — только тестовый стенд на NAS.
+- Тег `vX.Y` собирает образ `ghcr.io/zalessky/detalka` (`latest` и `X.Y`); NAS ночью забирает `latest` (см. `docs/DSM.md`).
+- Имя образа в `.github/workflows/docker-image.yml` — только `detalka`. Если поставить `sterx`, сборка перезапишет образ rolf64.
+- Релизы выпускает владелец сам в интерфейсе GitHub (Release с новым тегом, Target — `main`). Claude Code тег не ставит.
+- К релизу готовить: версия в `package.json` и `package-lock.json`, запись в `CHANGELOG.md`, `npm run build` проходит.
+- Пока сайт не выпускается наружу — только тестовый стенд на NAS (`http://192.168.1.56:8081`).

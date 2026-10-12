@@ -31,8 +31,8 @@ npm run build      # статика в out/
 
 ## Релиз и деплой
 
-Тег `vX.Y` запускает `.github/workflows/docker-image.yml`: образ `ghcr.io/zalessky/detalka` с тегами `latest` и `X.Y`.
-Репозиторий приватный, поэтому образ тоже приватный: на сервере нужен `docker login ghcr.io` с токеном GitHub (право `read:packages`).
+Release с тегом `vX.Y` на `main` запускает `.github/workflows/docker-image.yml`: образ `ghcr.io/zalessky/detalka` с тегами `latest` и `X.Y`.
+Тестовый стенд на NAS и выход в интернет — [docs/DSM.md](docs/DSM.md).
 
 ## Исходники оформления
 
