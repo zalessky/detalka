@@ -1,0 +1,13 @@
+# зависимости и сборка
+/node_modules
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# служебное
+.DS_Store
+Thumbs.db
+desktop.ini
+.env*.local
+npm-debug.log*

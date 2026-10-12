@@ -1,0 +1,8 @@
+node_modules
+.next
+out
+.git
+ref
+*.png
+!public/**/*.png
+palette-variants.html
